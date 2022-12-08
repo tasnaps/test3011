@@ -91,6 +91,7 @@ def moveToLine():
         else:
             movement()
     #TODO troubleshoot this condition:
+    #TODO Check robot turns on different angles = 360 worked fine. what about 180? 90? 20?
     if locationToLine > 0:
         print("We are on the right side of the area")
         if(degreesToLine<0):
