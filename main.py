@@ -20,14 +20,22 @@ right_motor = Motor(Port.C)
 # set third argument according to robot
 # 170 for small wheel robot
 #55,  120 for big wheel robot
-base = DriveBase(left_motor, right_motor, 55, 120)
+base = DriveBase(left_motor, right_motor, 60, 170)
 left_ir_sensor = Ev3devSensor(Port.S1)
 right_ir_sensor = Ev3devSensor(Port.S2)
 # when we set the robot in arena, must face forward we update heading in degrees turned
-heading = 0
-locationToLine = 0
-rotation = 0
+global heading
+global rotation
+global degreesToLine
+global locationToLine
 global angle
+
+heading = 0
+degreesToLine = 0
+locationToLine = 0
+angle = 0
+rotation = 0
+
 
 
 def deduct(value):
@@ -79,11 +87,16 @@ def moveToLine():
         print("we are on the left side")
         if(degreesToLine<0):
             turn = abs(degreesToLine)
+            time.sleep(1)
             base.turn(turn + 90)
         if(degreesToLine>0):
+            ev3.speaker.beep()
+            time.sleep(3)
             turn = -degreesToLine
             base.turn(turn + 90)
+            time.sleep(3)
         readAndMove()
+        base.straight(30)
         base.turn(-90)
         ballControl = checkBallControl()
         if (ballControl):
@@ -103,14 +116,19 @@ def moveToLine():
             print("degreesTo line when >0")
             #sleep for 3 seconds for troubleshooting
             ev3.speaker.beep()
-            time.sleep(3)
+            time.sleep(1)
             print(degreesToLine)
+            base.turn(20)
+            base.turn(-20)
             base.turn(degreesToLine)
-            time.sleep(3)
+            time.sleep(1)
         readAndMove()
+        time.sleep(0.1)
+        base.straight(20)
         base.turn(90)
         ballControl = checkBallControl()
         if (ballControl):
+            ev3.speaker.beep()
             base.straight(500)
         else:
             movement()
@@ -122,27 +140,14 @@ def checkBallControl():
         # we still have the ball
         return True
     else:
-        return True
-
-def lineFollow():
-    leftSensor = ColorSensor(Port.S3)
-    rightSensor = ColorSensor(Port.S4)
-    leftValue = leftSensor.reflection()
-    rightValue = rightSensor.reflection()
-    if(rightValue<3):
-        base.turn(10)
-    if(leftValue<3):
-        base.turn(-9)
-    else:#(leftValue>3 and rightValue>3)
-        base.straight(100)
-    lineFollow()
-
+        return False
 
 def readAndMove():
     #left color sensor
     color_sensor = ColorSensor(Port.S3)
     color_sensor_value = color_sensor.reflection()
     ballControl = checkBallControl()
+    time.sleep(0.5)
     if (color_sensor_value > 3 and ballControl): #and ballControl
         base.straight(20)
         readAndMove()
@@ -182,16 +187,4 @@ def movement():
         base.straight(150)
         updateLocation()
         movement()
-
-
-# movement()
-#base.straight(250)
-#base.straight(-250)
-#base.turn(-150)
-#heading = -150
-#base.straight(150)
-#updateLocation()
-#moveToLine()
 movement()
-#base.turn(-130)
-#lineFollow()
