@@ -10,6 +10,7 @@ from pybricks.iodevices import Ev3devSensor
 from pybricks.nxtdevices import LightSensor
 # micropython module umath not pybricks module
 import math as math
+import time
 ev3 = EV3Brick()
 
 # Wheels on b and c for correct lego calibration
@@ -89,7 +90,7 @@ def moveToLine():
             base.straight(500)
         else:
             movement()
-
+    #TODO troubleshoot this condition:
     if locationToLine > 0:
         print("We are on the right side of the area")
         if(degreesToLine<0):
@@ -99,8 +100,12 @@ def moveToLine():
         if(degreesToLine>0):
             degreesToLine = -degreesToLine - 90
             print("degreesTo line when >0")
+            #sleep for 3 seconds for troubleshooting
+            ev3.speaker.beep()
+            time.sleep(3)
             print(degreesToLine)
             base.turn(degreesToLine)
+            time.sleep(3)
         readAndMove()
         base.turn(90)
         ballControl = checkBallControl()
